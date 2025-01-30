@@ -1,5 +1,13 @@
 from django.db import models
 from datetime import datetime
+from django.contrib.auth.models import AbstractUser
+
+class User(AbstractUser):
+    email = models.EmailField(unique=True, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
 class District(models.Model):
     name = models.CharField(max_length=100)
     bn_name = models.CharField(max_length=100)
