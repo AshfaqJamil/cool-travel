@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import LoginSerializer, UserSerializer
+from .serializers import LoginSerializer, UserSerializer, RegisterSerializer
 
 
 def root_view(request):
@@ -18,12 +18,30 @@ def root_view(request):
         'message': 'Welcome to the Cool Travel API!',
         'endpoints': {
             'auth/login': '/api/auth/login/',
-            ''
+            'auth/register': '/api/auth/register/',
+            'auth/refresh': '/api/auth/refresh/',
             'coolest_districts': '/api/coolest-districts/',
             'travel_decision': '/api/travel-decision/?source=SOURCE&destination=DESTINATION&date=YYYY-MM-DD'
         }
     })
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+    serializer_class = RegisterSerializer
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
 
+            refresh = RefreshToken.for_user(user)
+
+            return Response({
+                'user': UserSerializer(user).data,
+                'access_token': str(refresh.access_token),
+                'refresh': str(refresh),
+                'message': 'Successfully registered!'
+            }, status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
