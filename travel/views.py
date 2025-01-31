@@ -53,6 +53,7 @@ class LoginView(APIView):
 
 
 class CoolestDistrictsAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         districts = District.objects.all()
         district_temps = []
@@ -65,6 +66,7 @@ class CoolestDistrictsAPIView(APIView):
         return Response(coolest_districts)
 
 class TravelDecisionAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         source = request.GET.get("source")
         destination = request.GET.get("destination")
