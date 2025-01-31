@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from travel.models import User
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,10 +26,10 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('password_confirm')
-
-        user = User.objects.create(
+        user = User(
             username=validated_data['username'],
             email=validated_data['email'],
-            password=validated_data['password']
         )
+        user.set_password(validated_data['password'])
+        user.save()
         return user
