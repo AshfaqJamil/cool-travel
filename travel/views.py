@@ -3,15 +3,55 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import District, WeatherData
 from django.http import JsonResponse
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from django.contrib.auth import authenticate
+from rest_framework_simplejwt.tokens import RefreshToken
+from .serializers import LoginSerializer, UserSerializer
+
 
 def root_view(request):
+    permission_classes = [AllowAny]
     return JsonResponse({
         'message': 'Welcome to the Cool Travel API!',
         'endpoints': {
+            'auth/login': '/api/auth/login/',
+            ''
             'coolest_districts': '/api/coolest-districts/',
             'travel_decision': '/api/travel-decision/?source=SOURCE&destination=DESTINATION&date=YYYY-MM-DD'
         }
     })
+
+
+class LoginView(APIView):
+    permission_classes = [AllowAny]
+    serializer_class = LoginSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            username = serializer.validated_data['username']
+            password = serializer.validated_data['password']
+
+            user = authenticate(username=username, password=password)
+
+            if user is not None:
+                refresh = RefreshToken.for_user(user)
+                return Response({
+                    'access_token': str(refresh.access_token),
+                    'refresh_token': str(refresh),
+                    'user': UserSerializer(user).data
+                }, status=status.HTTP_200_OK)
+
+            return Response({
+                'error': 'Invalid credentials'
+            }, status=status.HTTP_401_UNAUTHORIZED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class CoolestDistrictsAPIView(APIView):
     def get(self, request):
         districts = District.objects.all()
