@@ -73,19 +73,36 @@ python manage.py runserver
 ```
 
 ### 8. Access the API
-
+- Login: http://localhost:8000/api/auth/login/
+- Register: http://localhost:8000/api/auth/register/
+- Refresh: http://localhost:8000/api/auth/refresh/
 - Coolest 10 Districts: http://localhost:8000/api/coolest-districts/
 - Travel Decision: http://localhost:8000/api/travel-decision/?source=Dhaka&destination=Rangamati&date=2025-02-01
 
 ## API Endpoints
 
-### 1. Coolest 10 Districts
+### 1. User Authentication
+- *Login*
+- **URL**: `/api/auth/login/`
+- **Method**: POST
+- **Description**: Authenticate a user and return an access token.
+
+- *Register*
+- **URL**: `/api/auth/register/`
+- **Method**: POST
+- **Description**: Register a new user.
+
+- *Refresh Token*
+- **URL**: `/api/auth/register/`
+- **Method**: POST
+- **Description**: Refresh authentication tokens.
+### 2. Coolest 10 Districts
 
 - **URL**: `/api/coolest-districts/`
 - **Method**: GET
 - **Description**: Returns the 10 coolest districts based on the average temperature at 2 PM for the next 7 days.
 
-### 2. Travel Decision
+### 3. Travel Decision
 
 - **URL**: `/api/travel-decision/`
 - **Method**: GET
